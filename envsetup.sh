@@ -1800,3 +1800,5 @@ if [[ $( grep -r "codeaurora" "${1}"manifest/* ) ]]; then
 fi
 
 addcompletions
+
+export ANDROID_BUILD_TOP=$(gettop)

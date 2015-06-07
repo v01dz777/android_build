@@ -38,8 +38,7 @@ PRODUCT_PACKAGES += \
     InputDevices \
     KeyChain \
     Keyguard \
-    LatinIME \
-    Launcher3 \
+    Launcher2 \
     ManagedProvisioning \
     MtpDocumentsProvider \
     PacProcessor \

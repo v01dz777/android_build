@@ -31,14 +31,12 @@ PRODUCT_PACKAGES += \
     DeskClock \
     DocumentsUI \
     DownloadProviderUi \
-    Email \
     ExactCalculator \
     ExternalStorageProvider \
     FusedLocation \
     InputDevices \
     KeyChain \
     Keyguard \
-    LatinIME \
     Launcher3 \
     ManagedProvisioning \
     PacProcessor \

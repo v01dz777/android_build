@@ -130,13 +130,13 @@ function check_product()
         echo "Couldn't locate the top of the tree.  Try setting TOP." >&2
         return
     fi
-
-    if (echo -n $1 | grep -q -e "^du_") ; then
-       DU_BUILD=$(echo -n $1 | sed -e 's/^du_//g')
+    if (echo -n $1 | grep -q -e "^lineage_") ; then
+        LINEAGE_BUILD=$(echo -n $1 | sed -e 's/^lineage_//g')
+        export BUILD_NUMBER=$( (date +%s%N ; echo $LINEAGE_BUILD; hostname) | openssl sha1 | sed -e 's/.*=//g; s/ //g' | cut -c1-10 )
     else
-       DU_BUILD=
+        LINEAGE_BUILD=
     fi
-    export DU_BUILD
+    export LINEAGE_BUILD
 
         TARGET_PRODUCT=$1 \
         TARGET_BUILD_VARIANT= \
@@ -646,19 +646,7 @@ function lunch()
     fi
 
     check_product $product
-    if [ $? -ne 0 ]
-    then
-        # if we can't find the product, try to grab it from our github
-        T=$(gettop)
-        pushd $T > /dev/null
-    if [[ $( grep -i "codeaurora" "${1}"manifest/o8x_default.xml) ]]; then
-        vendor/extras/tools/roomservice-caf.py $product
-    else
-        vendor/extras/tools/roomservice.py $product
-    fi
-        popd > /dev/null
-        check_product $product
-    fi
+
     TARGET_PRODUCT=$product \
     TARGET_BUILD_VARIANT=$variant \
     TARGET_PLATFORM_VERSION=$version \

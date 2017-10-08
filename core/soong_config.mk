@@ -18,6 +18,8 @@ endif
 SOONG_VARIABLES_TMP := $(shell mktemp -u)
 include vendor/extras/soong/soong_config.mk
 $(SOONG_VARIABLES): FORCE du_soong
+include vendor/lineage/build/soong/soong_config.mk
+$(SOONG_VARIABLES): FORCE lineage_soong
 	$(hide) (\
 	echo '    "Make_suffix": "-$(TARGET_PRODUCT)",'; \
 	echo ''; \

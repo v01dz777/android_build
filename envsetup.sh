@@ -648,19 +648,17 @@ function lunch()
     check_product $product
     if [ $? -ne 0 ]
     then
-        # if we can't find a product, try to grab it off the LineageOS GitHub
+        # if we can't find the product, try to grab it from our github
         T=$(gettop)
-        cd $T > /dev/null
-        vendor/lineage/build/tools/roomservice.py $product
-        cd - > /dev/null
-        check_product $product
+        pushd $T > /dev/null
+    if [[ $( grep -i "codeaurora" "${1}"manifest/o8x_default.xml) ]]; then
+        vendor/extras/tools/roomservice-caf.py $product
     else
-        T=$(gettop)
-        cd $T > /dev/null
-        vendor/lineage/build/tools/roomservice.py $product true
-        cd - > /dev/null
+        vendor/extras/tools/roomservice.py $product
     fi
-
+        popd > /dev/null
+        check_product $product
+    fi
     TARGET_PRODUCT=$product \
     TARGET_BUILD_VARIANT=$variant \
     TARGET_PLATFORM_VERSION=$version \

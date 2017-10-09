@@ -892,12 +892,7 @@ endif
 
 include $(TOPDIR)vendor/extras/core/dumpvar.mk
 
-# Include any vendor specific apicheck.mk file
--include $(TOPDIR)vendor/*/build/core/apicheck.mk
-
-# Rules for QCOM targets
--include $(TOPDIR)vendor/lineage/build/core/qcom_target.mk
-
-# Rules for MTK targets
--include $(TOPDIR)vendor/lineage/build/core/mtk_target.mk
+ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
+include $(TOPDIR)vendor/extras/core/pathmap.mk
+include $(TOPDIR)vendor/extras/core/qcom_target.mk
 endif

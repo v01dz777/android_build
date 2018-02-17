@@ -168,10 +168,9 @@ include $(BUILD_SYSTEM)/node_fns.mk
 include $(BUILD_SYSTEM)/product.mk
 include $(BUILD_SYSTEM)/device.mk
 
-ifneq ($(strip $(TARGET_BUILD_APPS)),)
-# An unbundled app build needs only the core product makefiles.
-all_product_configs := $(call get-product-makefiles,\
-    $(SRC_TARGET_DIR)/product/AndroidProducts.mk)
+# A Lineage build needs only the Lineage product makefiles.
+ifneq ($(LINEAGE_BUILD),)
+  all_product_configs := $(shell find device -path "*/$(LINEAGE_BUILD)/lineage.mk")
 else
  ifneq ($(DU_BUILD),)
     all_product_configs := $(shell ls device/*/$(DU_BUILD)/du.mk)
@@ -180,8 +179,18 @@ else
     # files in the tree.
     all_product_configs := $(get-all-product-makefiles)
   endif # DU_BUILD
-endif
+  ifneq ($(strip $(TARGET_BUILD_APPS)),)
+  # An unbundled app build needs only the core product makefiles.
+  all_product_configs := $(call get-product-makefiles,\
+      $(SRC_TARGET_DIR)/product/AndroidProducts.mk)
+  else
+  # Read in all of the product definitions specified by the AndroidProducts.mk
+  # files in the tree.
+  all_product_configs := $(get-all-product-makefiles)
+  endif # TARGET_BUILD_APPS
+endif # LINEAGE_BUILD
 
+ifeq ($(LINEAGE_BUILD),)
 all_named_products :=
 ifeq ($(DU_BUILD),)
 # Find the product config makefile for the current product.
@@ -382,8 +391,12 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES := \
     $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_DEFAULT_PROPERTY_OVERRIDES))
 .KATI_READONLY := PRODUCT_DEFAULT_PROPERTY_OVERRIDES
 
+# A list of property assignments, like "key = value", with zero or more
+# whitespace characters on either side of the '='.
+# used for overriding properties in build.prop
 PRODUCT_BUILD_PROP_OVERRIDES := \
-	$(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_BUILD_PROP_OVERRIDES))
+    $(strip $(PRODUCTS.$(INTERNAL_PRODUCT).PRODUCT_BUILD_PROP_OVERRIDES))
+.KATI_READONLY := PRODUCT_BUILD_PROP_OVERRIDES
 
 # Should we use the default resources or add any product specific overlays
 PRODUCT_PACKAGE_OVERLAYS := \

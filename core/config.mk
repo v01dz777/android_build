@@ -183,6 +183,13 @@ include $(BUILD_SYSTEM)/envsetup.mk
 # See envsetup.mk for a description of SCAN_EXCLUDE_DIRS
 FIND_LEAVES_EXCLUDES := $(addprefix --prune=, $(SCAN_EXCLUDE_DIRS) .repo .git)
 
+# General entries for project pathmap.  Any entries listed here should
+# be device and hardware independent.
+$(call project-set-path-variant,recovery,RECOVERY_VARIANT,bootable/recovery)
+
+-include vendor/extra/BoardConfigExtra.mk
+-include vendor/lineage/config/BoardConfigLineage.mk
+
 # The build system exposes several variables for where to find the kernel
 # headers:
 #   TARGET_DEVICE_KERNEL_HEADERS is automatically created for the current
@@ -571,7 +578,11 @@ LEX := prebuilts/misc/$(BUILD_OS)-$(HOST_PREBUILT_ARCH)/flex/flex-2.5.39
 # To run bison from elsewhere you need to set up enviromental variable
 # BISON_PKGDATADIR.
 BISON_PKGDATADIR := $(PWD)/external/bison/data
+ifeq ($(USE_HOST_BISON),yes)
+BISON := bison
+else
 BISON := prebuilts/misc/$(BUILD_OS)-$(HOST_PREBUILT_ARCH)/bison/bison
+endif
 YACC := $(BISON) -d
 BISON_DATA := $(wildcard external/bison/data/* external/bison/data/*/*)
 
@@ -968,3 +979,22 @@ endif
 
 # DU common sepolicy
 include $(TOPDIR)vendor/du/sepolicy/sepolicy.mk
+ifneq ($(LINEAGE_BUILD),)
+## We need to be sure the global selinux policies are included
+## last, to avoid accidental resetting by device configs
+$(eval include device/lineage/sepolicy/common/sepolicy.mk)
+
+# Include any vendor specific config.mk file
+-include $(TOPDIR)vendor/*/build/core/config.mk
+
+# Include any vendor specific apicheck.mk file
+-include $(TOPDIR)vendor/*/build/core/apicheck.mk
+
+# Rules for QCOM targets
+-include $(TOPDIR)vendor/lineage/build/core/qcom_target.mk
+
+# Rules for MTK targets
+-include $(TOPDIR)vendor/lineage/build/core/mtk_target.mk
+endif
+
+include $(BUILD_SYSTEM)/dumpvar.mk
